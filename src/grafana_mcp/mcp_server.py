@@ -35,98 +35,37 @@ def get_grafana_client():
     )
 
 
-@mcp.tool()
-def get_grafana_info() -> str:
-    """Returns basic information about using Grafana MCP tools.
-    """
-    return (
-        """
-        Grafana MCP provides tools for interacting with Grafana instances.
-        
-        This is a placeholder implementation. Actual tools will be implemented in future versions.
-        
-        Planned tools:
-        - Dashboards management
-        - Data sources management
-        - Alerting management
-        - User/Organization management
-        - Documentation search
-        """
-    )
-
 
 @mcp.tool()
-def list_dashboards() -> Dict[str, Any]:
-    """Placeholder function to list Grafana dashboards.
-
-    Returns:
-        A placeholder response indicating this is not yet implemented.
-    """
-    return {
-        "status": "not_implemented",
-        "message": "This feature is not yet implemented."
-    }
-
-
-@mcp.tool()
-def get_dashboard(uid: str) -> Dict[str, Any]:
-    """Placeholder function to get a specific Grafana dashboard.
+def create_time_series_dashboard(
+    title: str,
+    raw_sql: str,
+) -> Dict[str, Any]:
+    """Function to create a Grafana dashboard with a single time series panel.
+    Clickhouse data source is used.
 
     Args:
-        uid: The UID of the dashboard to retrieve.
+        title (str): Title of the dashboard.
+        raw_sql (str): Raw SQL query to be used in the panel.
 
     Returns:
-        A placeholder response indicating this is not yet implemented.
-    """
-    return {
-        "status": "not_implemented",
-        "message": "This feature is not yet implemented.",
-        "requested_uid": uid
-    }
-
-
-@mcp.tool()
-def create_dashboard(dashboard: Dict[str, Any]) -> Dict[str, Any]:
-    """Placeholder function to create a new Grafana dashboard.
-
-    Args:
-        dashboard: The dashboard configuration to create.
-
-    Returns:
-        The HTTP status and a message indicating the result.
-    """
-    client = get_grafana_client()
-
-    res = client.dashboard.update_dashboard(
-        dashboard=dashboard, overwrite=True)
-
-    return {
-        "status": res.status_code,
-        "message": res.text
-    }
-
-
-@mcp.tool()
-def create_dummy_dashboard(uuid_suffix: str) -> Dict[str, Any]:
-    """Placeholder function to create a new Grafana dashboard.
-
-    Args:
-        dashboard: The dashboard configuration to create.
-
-    Returns:
-        The HTTP status and a message indicating the result.
+        JSON response from the Grafana API.
     """
     client = get_grafana_client()
 
     import json
-    with open("tools/test_dashboard.json", "r") as f:
+    with open("dashboard.json", "r") as f:
         dashboard = json.load(f)
 
-    dashboard["meta"]["slug"] += uuid_suffix
-    dashboard["meta"]["url"] += uuid_suffix
+    import uuid
 
-    dashboard["dashboard"]["uid"] += uuid_suffix
-    dashboard["dashboard"]["title"] += uuid_suffix
+    dashboard["dashboard"]["uid"] = str(uuid.uuid4())
+    dashboard["dashboard"]["title"] = title
+    dashboard["dashboard"]["panels"][0]["targets"][0]["rawSql"] = raw_sql
+    # datasource
+    dashboard["dashboard"]["panels"][0]["targets"][0]["datasource"]["uid"] = os.getenv("GRAFANA_DATASOURCE_UID", "Clickhouse")
+    dashboard["dashboard"]["panels"][0]["datasource"]["uid"] = os.getenv("GRAFANA_DATASOURCE_UID", "Clickhouse")
+
 
     res = client.dashboard.update_dashboard(dashboard)
 

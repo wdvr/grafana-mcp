@@ -45,7 +45,7 @@ def test_grafana_connection():
         print(f"   Organization: {org.get('name')} (ID: {org.get('id')})")
         
         # List dashboards
-        dashboard = grafana.dashboard.get_dashboard("dummy-dash")
+        dashboard = grafana.dashboard.get_dashboard("90ffba76-fcf8-4094-8b41-dd7055f7b9d7")
         print(f"   Found {dashboard} dashboard")
 
         # List datasources
@@ -105,7 +105,7 @@ def create_test_dashboard():
 
 
 if __name__ == "__main__":
-    create_test_dashboard()
-    # success = test_grafana_connection()
+    # create_test_dashboard()
+    success = test_grafana_connection()
     #
     # sys.exit(0 if success else 1)
