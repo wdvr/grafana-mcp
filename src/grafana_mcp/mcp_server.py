@@ -2,12 +2,38 @@
 Grafana MCP server implementation
 """
 
+from grafana_client.client import TokenAuth
+from grafana_client import GrafanaApi
 import os
 from typing import Dict, Any
 from mcp.server.fastmcp import FastMCP
 
+import grafana_client
+import dotenv
+# Load environment variables from .env file
+dotenv.load_dotenv()
+
+
 # Create an MCP server
 mcp = FastMCP("Grafana MCP")
+
+
+def get_grafana_client():
+    """Creates a Grafana client instance.
+
+    Returns:
+        A Grafana client instance.
+    """
+    grafana_url = os.getenv("GRAFANA_URL", "http://pytorchci.grafana.net")
+    api_key = os.getenv("GRAFANA_API_TOKEN")
+    if not api_key:
+        raise ValueError("GRAFANA_API_TOKEN environment variable is not set.")
+
+    return GrafanaApi.from_url(
+        url=grafana_url,
+        credential=TokenAuth(token=api_key)
+    )
+
 
 @mcp.tool()
 def get_grafana_info() -> str:
@@ -28,10 +54,11 @@ def get_grafana_info() -> str:
         """
     )
 
+
 @mcp.tool()
 def list_dashboards() -> Dict[str, Any]:
     """Placeholder function to list Grafana dashboards.
-    
+
     Returns:
         A placeholder response indicating this is not yet implemented.
     """
@@ -40,13 +67,14 @@ def list_dashboards() -> Dict[str, Any]:
         "message": "This feature is not yet implemented."
     }
 
+
 @mcp.tool()
 def get_dashboard(uid: str) -> Dict[str, Any]:
     """Placeholder function to get a specific Grafana dashboard.
-    
+
     Args:
         uid: The UID of the dashboard to retrieve.
-        
+
     Returns:
         A placeholder response indicating this is not yet implemented.
     """
@@ -55,6 +83,28 @@ def get_dashboard(uid: str) -> Dict[str, Any]:
         "message": "This feature is not yet implemented.",
         "requested_uid": uid
     }
+
+
+@mcp.tool()
+def create_dashboard(dashboard: Dict[str, Any]) -> Dict[str, Any]:
+    """Placeholder function to create a new Grafana dashboard.
+
+    Args:
+        dashboard: The dashboard configuration to create.
+
+    Returns:
+        The HTTP status and a message indicating the result.
+    """
+    client = get_grafana_client()
+
+    res = client.dashboard.update_dashboard(
+        dashboard=dashboard, overwrite=True)
+
+    return {
+        "status": res.status_code,
+        "message": res.text
+    }
+
 
 # Run the server if executed directly
 if __name__ == "__main__":

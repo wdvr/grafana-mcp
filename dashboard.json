@@ -1,0 +1,352 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "P2DBC9C2502A25749"
+      },
+      "description": "Accuracy metrics from PyTorch benchmarks",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "title": "Inductor Accuracy Metrics",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "P2DBC9C2502A25749"
+          },
+          "format": 1,
+          "meta": {
+            "builderOptions": {
+              "fields": [],
+              "limit": 100,
+              "mode": "list"
+            }
+          },
+          "queryType": "sql",
+          "rawSql": "SELECT\n    FROM_UNIXTIME(min(timestamp)) AS time,\n    replaceAll(\n        replaceRegexpOne(\n            replaceRegexpOne(output, '^.*test-reports/', ''),\n            '_accuracy\\\\.csv', ''\n        ),\n        '_',\n        ' / '\n    ) AS metric,\n    count(*) AS value\nFROM (\n    SELECT\n        timestamp,\n        tupleElement(benchmark, 'extra_info')['output'] AS output,\n        workflow_id\n    FROM benchmark.oss_ci_benchmark_v3\n    WHERE\n        metric.name = 'accuracy'\n        AND tupleElement(metric, 'extra_info')['benchmark_values'] NOT LIKE '%pass%'\n        AND tupleElement(metric, 'extra_info')['benchmark_values'] NOT LIKE '%eager_variation%'\n        AND timestamp >= toUnixTimestamp(now() - INTERVAL 7 DAY)\n        AND repo = 'pytorch/pytorch'\n        AND head_branch LIKE '%main%'\n        AND tupleElement(benchmark, 'extra_info')['output'] LIKE '%inductor%'\n) AS filtered\nGROUP BY metric, workflow_id\nORDER BY time ASC",
+          "refId": "A",
+          "datasourceId": 1,
+          "$hashKey": "object:39"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "P2DBC9C2502A25749"
+      },
+      "description": "Number of accuracy tests run per day",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 2,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "title": "Daily Accuracy Tests",
+      "type": "barchart",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "P2DBC9C2502A25749"
+          },
+          "format": 1,
+          "meta": {
+            "builderOptions": {
+              "fields": [],
+              "limit": 100,
+              "mode": "list"
+            }
+          },
+          "queryType": "sql",
+          "rawSql": "SELECT\n    toDate(FROM_UNIXTIME(timestamp)) AS day,\n    count(*) AS count\nFROM benchmark.oss_ci_benchmark_v3\nWHERE\n    metric.name = 'accuracy'\n    AND timestamp >= toUnixTimestamp(now() - INTERVAL 7 DAY)\n    AND repo = 'pytorch/pytorch'\n    AND head_branch LIKE '%main%'\n    AND tupleElement(benchmark, 'extra_info')['output'] LIKE '%inductor%'\nGROUP BY day\nORDER BY day ASC",
+          "refId": "A",
+          "datasourceId": 1,
+          "$hashKey": "object:186"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "P2DBC9C2502A25749"
+      },
+      "description": "Distribution of accuracy metrics by type",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 3,
+      "options": {
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "title": "Accuracy Metrics Distribution",
+      "type": "piechart",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "P2DBC9C2502A25749"
+          },
+          "format": 1,
+          "meta": {
+            "builderOptions": {
+              "fields": [],
+              "limit": 100,
+              "mode": "list"
+            }
+          },
+          "queryType": "sql",
+          "rawSql": "SELECT\n    replaceAll(\n        replaceRegexpOne(\n            replaceRegexpOne(tupleElement(benchmark, 'extra_info')['output'], '^.*test-reports/', ''),\n            '_accuracy\\\\.csv', ''\n        ),\n        '_',\n        ' / '\n    ) AS metric,\n    count(*) AS count\nFROM benchmark.oss_ci_benchmark_v3\nWHERE\n    metric.name = 'accuracy'\n    AND tupleElement(metric, 'extra_info')['benchmark_values'] NOT LIKE '%pass%'\n    AND tupleElement(metric, 'extra_info')['benchmark_values'] NOT LIKE '%eager_variation%'\n    AND timestamp >= toUnixTimestamp(now() - INTERVAL 7 DAY)\n    AND repo = 'pytorch/pytorch'\n    AND head_branch LIKE '%main%'\n    AND tupleElement(benchmark, 'extra_info')['output'] LIKE '%inductor%'\nGROUP BY metric\nORDER BY count DESC\nLIMIT 10",
+          "refId": "A",
+          "datasourceId": 1,
+          "$hashKey": "object:241"
+        }
+      ]
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [
+    "pytorch",
+    "inductor",
+    "accuracy"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "7",
+          "value": "7"
+        },
+        "hide": 0,
+        "name": "timeRange",
+        "options": [
+          {
+            "selected": true,
+            "text": "7",
+            "value": "7"
+          },
+          {
+            "selected": false,
+            "text": "14",
+            "value": "14"
+          },
+          {
+            "selected": false,
+            "text": "30",
+            "value": "30"
+          }
+        ],
+        "query": "7,14,30",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "PyTorch Inductor Accuracy Metrics",
+  "uid": "pytorch-inductor-accuracy",
+  "version": 1,
+  "weekStart": ""
+}
