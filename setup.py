@@ -8,6 +8,8 @@ setup(
     include_package_data=True,
     install_requires=[
         "mcp>=1.3.0",
+        "grafana-client>=4.3.2",
+        "python-dotenv>=1.1.0",
     ],
     python_requires=">=3.7",
 )
