@@ -25,7 +25,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "P2DBC9C2502A25749"
+        "uid": "ceczcsck1b20wb"
       },
       "description": "Accuracy metrics from PyTorch benchmarks",
       "fieldConfig": {
@@ -105,7 +105,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "P2DBC9C2502A25749"
+            "uid": "ceczcsck1b20wb"
           },
           "format": 1,
           "meta": {
@@ -126,7 +126,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "P2DBC9C2502A25749"
+        "uid": "ceczcsck1b20wb"
       },
       "description": "Number of accuracy tests run per day",
       "fieldConfig": {
@@ -204,7 +204,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "P2DBC9C2502A25749"
+            "uid": "ceczcsck1b20wb"
           },
           "format": 1,
           "meta": {
@@ -225,7 +225,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "P2DBC9C2502A25749"
+        "uid": "ceczcsck1b20wb"
       },
       "description": "Distribution of accuracy metrics by type",
       "fieldConfig": {
@@ -252,9 +252,7 @@
       },
       "id": 3,
       "options": {
-        "displayLabels": [
-          "percent"
-        ],
+        "displayLabels": ["percent"],
         "legend": {
           "displayMode": "list",
           "placement": "bottom",
@@ -262,9 +260,7 @@
         },
         "pieType": "pie",
         "reduceOptions": {
-          "calcs": [
-            "sum"
-          ],
+          "calcs": ["sum"],
           "fields": "",
           "values": false
         },
@@ -279,7 +275,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "P2DBC9C2502A25749"
+            "uid": "ceczcsck1b20wb"
           },
           "format": 1,
           "meta": {
@@ -301,11 +297,7 @@
   "refresh": "",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": [
-    "pytorch",
-    "inductor",
-    "accuracy"
-  ],
+  "tags": ["pytorch", "inductor", "accuracy"],
   "templating": {
     "list": [
       {
