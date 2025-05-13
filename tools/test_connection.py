@@ -45,13 +45,13 @@ def test_grafana_connection():
         print(f"   Organization: {org.get('name')} (ID: {org.get('id')})")
         
         # List dashboards
-        dashboard = grafana.dashboard.get_home_dashboard()
+        dashboard = grafana.dashboard.get_dashboard("dummy-dash")
         print(f"   Found {dashboard} dashboard")
-        
+
         # List datasources
         datasources = grafana.datasource.list_datasources()
         print(f"   Found {len(datasources)} data sources")
-        
+
         print("\nConnection test successful!")
         return True
     except Exception as e:
@@ -64,6 +64,48 @@ def test_grafana_connection():
         return False
 
 
+# create a test dashboard
+def create_test_dashboard():
+    load_dotenv()
+
+    # Get Grafana credentials
+    grafana_url = os.getenv("GRAFANA_URL")
+    grafana_token = os.getenv("GRAFANA_API_TOKEN")
+
+    # Check if credentials are available
+    if not grafana_url or not grafana_token:
+        print("Error: Grafana credentials not found.")
+        print("Make sure you have a .env file with GRAFANA_URL and GRAFANA_API_TOKEN defined.")
+        print("You can copy .env.example to .env and edit it with your credentials.")
+        sys.exit(1)
+
+    try:
+        print(f"Connecting to Grafana at {grafana_url}...")
+
+        # Initialize Grafana client with token auth
+        grafana = GrafanaApi.from_url(
+            url=grafana_url,
+            credential=TokenAuth(token=grafana_token)
+        )
+
+        """Create a test dashboard in Grafana."""
+        # load from json file
+        import json
+        with open("test_dashboard.json", "r") as f:
+            dashboard = json.load(f)
+
+        print(grafana.dashboard.update_dashboard(dashboard))
+    except Exception as e:
+        print(f"\n❌ Connection failed: {str(e)}")
+        print("\nPossible issues:")
+        print(" - Invalid Grafana URL")
+        print(" - Invalid API token")
+        print(" - Network connectivity issues")
+        print(" - Insufficient permissions for the API token")
+
+
 if __name__ == "__main__":
-    success = test_grafana_connection()
-    sys.exit(0 if success else 1)
+    create_test_dashboard()
+    # success = test_grafana_connection()
+    #
+    # sys.exit(0 if success else 1)

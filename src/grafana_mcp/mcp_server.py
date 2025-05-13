@@ -10,9 +10,9 @@ from mcp.server.fastmcp import FastMCP
 
 import grafana_client
 import dotenv
+
 # Load environment variables from .env file
 dotenv.load_dotenv()
-
 
 # Create an MCP server
 mcp = FastMCP("Grafana MCP")
@@ -104,6 +104,33 @@ def create_dashboard(dashboard: Dict[str, Any]) -> Dict[str, Any]:
         "status": res.status_code,
         "message": res.text
     }
+
+
+@mcp.tool()
+def create_dummy_dashboard(uuid_suffix: str) -> Dict[str, Any]:
+    """Placeholder function to create a new Grafana dashboard.
+
+    Args:
+        dashboard: The dashboard configuration to create.
+
+    Returns:
+        The HTTP status and a message indicating the result.
+    """
+    client = get_grafana_client()
+
+    import json
+    with open("tools/test_dashboard.json", "r") as f:
+        dashboard = json.load(f)
+
+    dashboard["meta"]["slug"] += uuid_suffix
+    dashboard["meta"]["url"] += uuid_suffix
+
+    dashboard["dashboard"]["uid"] += uuid_suffix
+    dashboard["dashboard"]["title"] += uuid_suffix
+
+    res = client.dashboard.update_dashboard(dashboard)
+
+    return res
 
 
 # Run the server if executed directly
