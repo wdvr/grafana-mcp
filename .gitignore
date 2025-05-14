@@ -1,3 +1,5 @@
 /venv/
 /src/grafana_mcp.egg-info/
 .env
+**/.claude/settings.local.json
+**.pyc
