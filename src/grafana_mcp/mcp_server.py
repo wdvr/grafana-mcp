@@ -82,7 +82,7 @@ def get_public_dashboard_url(dashboard_uid: str) -> Optional[str]:
     Returns:
         Optional[str]: The public URL for the dashboard, or None if not found or not public.
     """
-    grafana_url = os.getenv("GRAFANA_URL", "http://pytorchci.grafana.net")
+    grafana_url = os.getenv("GRAFANA_URL", "https://pytorchci.grafana.net")
     api_key = os.getenv("GRAFANA_API_TOKEN")
 
     if not api_key:
@@ -117,6 +117,8 @@ def get_public_dashboard_url(dashboard_uid: str) -> Optional[str]:
 def create_time_series_dashboard(
     title: str,
     raw_sql: str,
+    description: str = None,
+    panel_title: str = None,
     make_public: bool = True
 ) -> Dict[str, Any]:
     """    Create a Grafana dashboard (ClickHouse data-source) with a single
@@ -166,7 +168,10 @@ def create_time_series_dashboard(
 
     Args:
         title (str): Title of the dashboard.
-        raw_sql (str): Raw SQL query to be used in the panel. Make sure the query is adapted for grafana.
+        description (str): Description of the dashboard.
+        panel_title (str): Title of the panel.
+        raw_sql (str): Raw SQL query to be used in the panel. Make sure the query is adapted to use grafana magic strings for date ranges, as well as has the correct timeseries fields.
+                        For example: SELECT toUnixTimestamp(toStartOfInterval(event_time, INTERVAL 1 minute)) as time_sec, count() as value FROM events WHERE event_time >= $__timeFrom() AND event_time <= $__timeTo() GROUP BY time_sec ORDER BY time_sec
         make_public (bool): Whether to make the dashboard public. Defaults to True.
 
     Returns:
@@ -188,6 +193,12 @@ def create_time_series_dashboard(
     dashboard["dashboard"]["panels"][0]["datasource"]["uid"] = os.getenv(
         "GRAFANA_DATASOURCE_UID", "Clickhouse")
 
+    # set the panel title
+    dashboard["dashboard"]["panels"][0]["title"] = title
+    # set the panel description
+    dashboard["dashboard"]["panels"][0]["description"] = description if description else ""
+    # set the dashboard description
+    dashboard["dashboard"]["description"] = description if description else ""
     res = client.dashboard.update_dashboard(dashboard)
 
     # If requested, make the dashboard public
