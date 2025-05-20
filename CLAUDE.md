@@ -2,8 +2,9 @@
 
 ## TODO
 
-- make the dashboard public and create a link and show to user @Ivan
-- update doc strings and make sure Claude makes grafana enabled queries @wouter
+[X] make the dashboard public and create a link and show to user @Ivan
+[X] update doc strings and make sure Claude makes grafana enabled queries @wouter
+
 - do an evaluation to make job cancellation / job times / ... @Ivan
 - make a doc to install / start both MCPs (prob not needed)
 
