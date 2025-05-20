@@ -119,14 +119,54 @@ def create_time_series_dashboard(
     raw_sql: str,
     make_public: bool = True
 ) -> Dict[str, Any]:
-    """Function to create a Grafana dashboard with a single time series panel.
-    Clickhouse data source is used.
+    """    Create a Grafana dashboard (ClickHouse data-source) with a single
+    **Time-series** panel.
+
+    -------------------- SQL CONTRACT (Grafana ClickHouse v4+) --------------------
+    • Query **must** return a `time` column first — either your own
+      Date/DateTime field aliased as `time` *or* the bucket macro:
+
+          SELECT $__timeInterval(ts_column) AS time, …
+
+    • Always filter with the range macro:
+
+          WHERE $__timeFilter(ts_column)
+
+    • Follow with one or more numeric columns.  Each column’s alias becomes the
+      series name.  If you need multiple lines from a single numeric column,
+      insert a string label between `time` and the metric.
+
+    • Finish with:
+
+          GROUP BY time
+          ORDER BY time
+
+    • Supported macros (subset):
+        - $__timeFilter(col) / $__timeFilter_ms(col)
+        - $__timeInterval(col) / $__timeInterval_ms(col)
+        - $__dateFilter(col), $__dateTimeFilter(date,ts)
+        - $__fromTime, $__toTime (+ *_ms)
+        - $__interval_s
+        - $__conditionalAll(cond, $var)
+
+    • Timestamps should be stored in **UTC**; Grafana handles browser TZ shifts.
+
+    • **No trailing semicolon** — Grafana appends fragments internally.
+
+    Example minimal query:
+
+        SELECT
+          $__timeInterval(created_at) AS time,
+          avg(load_1m) AS "Load-1m"
+        FROM system.metrics
+        WHERE $__timeFilter(created_at)
+        GROUP BY time
+        ORDER BY time
 
 
     Args:
         title (str): Title of the dashboard.
-        raw_sql (str): Raw SQL query to be used in the panel. Make sure the query is adapted to use grafana magic strings for date ranges, as well as has the correct timeseries fields.
-                        For example: SELECT toUnixTimestamp(toStartOfInterval(event_time, INTERVAL 1 minute)) as time_sec, count() as value FROM events WHERE event_time >= $__timeFrom() AND event_time <= $__timeTo() GROUP BY time_sec ORDER BY time_sec
+        raw_sql (str): Raw SQL query to be used in the panel. Make sure the query is adapted for grafana.
         make_public (bool): Whether to make the dashboard public. Defaults to True.
 
     Returns:
@@ -165,50 +205,6 @@ def create_time_series_dashboard(
             print(f"Failed to make dashboard public: {e}")
 
     return res
-
-
-def make_dashboard_public(grafana_url: str, api_key: str, dashboard_uid: str) -> str:
-    """Makes a dashboard public using the public dashboards API and returns the public URL.
-
-    Args:
-        grafana_url (str): The Grafana URL.
-        api_key (str): The Grafana API key.
-        dashboard_uid (str): The dashboard UID.
-
-    Returns:
-        str: The public URL for the dashboard, or None if the operation failed.
-    """
-    # Set up headers for API request
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-
-    try:
-        # Create a public dashboard using the public dashboards API
-        public_dashboard_url = f"{grafana_url}/api/dashboards/uid/{dashboard_uid}/public-dashboards/"
-
-        # Simple empty POST request to create a public dashboard
-        response = requests.post(public_dashboard_url,
-                                 headers=headers, json={})
-
-        print(f"Public dashboard API response status: {response.status_code}")
-        print(f"Public dashboard API response: {response.text}")
-
-        if response.status_code >= 200 and response.status_code < 300:
-            result = response.json()
-            # The response should contain the accessToken for the public URL
-            access_token = result.get("accessToken")
-            if access_token:
-                public_url = f"{grafana_url}/public-dashboards/{access_token}"
-                print(f"Created public dashboard at {public_url}")
-                return public_url
-
-        # Fallback to direct dashboard URL
-        return f"{grafana_url}/d/{dashboard_uid}"
-    except Exception as e:
-        print(f"Error making dashboard public: {e}")
-        return f"{grafana_url}/d/{dashboard_uid}"
 
 
 # Run the server if executed directly
