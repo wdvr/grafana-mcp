@@ -141,8 +141,6 @@ def create_time_series_dashboard(
 
       Order results by the time column ascending (oldest first) for proper chronological rendering, unless the data source or Grafana does this automatically.
 
-    • Timestamps should be stored in **UTC**; Grafana handles browser TZ shifts.
-
     • **No trailing semicolon** — Grafana appends fragments internally.
 
     • Other clickhouse/grafana macros and variables are not supported, avoid them.
@@ -158,7 +156,7 @@ def create_time_series_dashboard(
         ORDER BY time
 
         SELECT
-            toUnixTimestamp(toStartOfInterval(event_time, INTERVAL 1 minute)) as time,
+            toStartOfInterval(event_time, INTERVAL 1 minute) as time,
             count() as value
         FROM events
         WHERE $__timeFilter(event_time)
