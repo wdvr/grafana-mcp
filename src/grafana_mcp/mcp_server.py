@@ -128,7 +128,9 @@ def create_time_series_dashboard(
     -------------------- SQL CONTRACT (Grafana ClickHouse v4+) --------------------
     • The query should return at least a time column and one numeric metric column. The time column must be a DateTime (or DateTime64) type so Grafana recognizes it as the timestamp. For instance: `SELECT timestamp AS time, count() AS total ...`.
 
-    • Always include a time filter macro to respect the dashboard’s time range. For tables with a single DateTime timestamp column, use `WHERE $__timeFilter(<TimeColumn>)`. If the table has separate date and datetime columns, use `WHERE $__dateTimeFilter(<DateColumn>, <DateTimeColumn>)` to ensure both partition and time are filtered.
+    • Always include a time filter macro to respect the dashboard’s time range.
+        For tables with a single DateTime timestamp column, use `WHERE $__timeFilter(<TimeColumn_OR_Expression>)`. If the table has separate date and datetime columns, use `WHERE $__dateTimeFilter(<DateColumn>, <DateTimeColumn>)` to ensure both partition and time are filtered.
+
 
     • Follow with one or more numeric columns.  Each column’s alias becomes the
       series name.  If you need multiple lines from a single numeric column,
@@ -143,7 +145,7 @@ def create_time_series_dashboard(
 
     • **No trailing semicolon** — Grafana appends fragments internally.
 
-    • Other clickhouse/grafana macros and variables are not supported, avoid them.
+    • Other clickhouse/grafana macros and variables are not supported, **avoid them**.
 
     Example minimal queries:
 
