@@ -110,7 +110,7 @@
               }
             },
             "pluginVersion": "4.8.2",
-            "queryType": "table",
+            "queryType": "timeseries",
             "rawSql": "",
             "refId": "A"
           }
