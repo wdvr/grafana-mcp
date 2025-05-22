@@ -12,6 +12,7 @@ from typing import Dict, Any, Optional
 from mcp.server.fastmcp import FastMCP
 import requests
 import json
+from importlib import resources
 
 import dotenv
 
@@ -179,7 +180,7 @@ def create_time_series_dashboard(
     """
     client = get_grafana_client()
 
-    with open("dashboard.json", "r") as f:
+    with resources.files("grafana_mcp").joinpath("dashboard.json").open("r") as f:
         dashboard = json.load(f)
 
     dashboard_uid = str(uuid.uuid4())

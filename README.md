@@ -2,6 +2,8 @@
 
 This project provides [MCP](https://modelcontextprotocol.io/) server for Grafana, including MCP tools to interact with Grafana dashboards, data sources, alerts, and more.
 
+The package includes a dashboard template resource that is properly bundled with the package for use when installed.
+
 ## Usage
 
 ### Installation
@@ -71,6 +73,8 @@ claude
    ```bash
    pip install -e .
    ```
+
+The package uses Python's package resource management system to include the dashboard template. The dashboard.json file is stored in the src/grafana_mcp/ directory and is accessed using importlib.resources when the package is installed.
 
 ### Testing
 
