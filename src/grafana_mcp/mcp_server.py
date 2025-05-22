@@ -126,14 +126,9 @@ def create_time_series_dashboard(
     **Time-series** panel.
 
     -------------------- SQL CONTRACT (Grafana ClickHouse v4+) --------------------
-    • Query **must** return a `time` column first — either your own
-      Date/DateTime field aliased as `time` *or* the bucket macro:
+    • The query should return at least a time column and one numeric metric column. The time column must be a DateTime (or DateTime64) type so Grafana recognizes it as the timestamp. For instance: `SELECT timestamp AS time, count() AS total ...`.
 
-          SELECT $__timeInterval(ts_column) AS time, …
-
-    • Always filter with the range macro:
-
-          WHERE $__timeFilter(ts_column)
+    • Always include a time filter macro to respect the dashboard’s time range. For tables with a single DateTime timestamp column, use `WHERE $__timeFilter(<TimeColumn>)`. If the table has separate date and datetime columns, use `WHERE $__dateTimeFilter(<DateColumn>, <DateTimeColumn>)` to ensure both partition and time are filtered.
 
     • Follow with one or more numeric columns.  Each column’s alias becomes the
       series name.  If you need multiple lines from a single numeric column,
@@ -144,25 +139,29 @@ def create_time_series_dashboard(
           GROUP BY time
           ORDER BY time
 
-    • Supported macros (subset):
-        - $__timeFilter(col) / $__timeFilter_ms(col)
-        - $__timeInterval(col) / $__timeInterval_ms(col)
-        - $__dateFilter(col), $__dateTimeFilter(date,ts)
-        - $__fromTime, $__toTime (+ *_ms)
-        - $__interval_s
-        - $__conditionalAll(cond, $var)
+      Order results by the time column ascending (oldest first) for proper chronological rendering, unless the data source or Grafana does this automatically.
 
     • Timestamps should be stored in **UTC**; Grafana handles browser TZ shifts.
 
     • **No trailing semicolon** — Grafana appends fragments internally.
 
-    Example minimal query:
+    • Other clickhouse/grafana macros and variables are not supported, avoid them.
+
+    Example minimal queries:
 
         SELECT
-          $__timeInterval(created_at) AS time,
+          created_at AS time,
           avg(load_1m) AS "Load-1m"
         FROM system.metrics
         WHERE $__timeFilter(created_at)
+        GROUP BY time
+        ORDER BY time
+
+        SELECT
+            toUnixTimestamp(toStartOfInterval(event_time, INTERVAL 1 minute)) as time,
+            count() as value
+        FROM events
+        WHERE $__timeFilter(event_time)
         GROUP BY time
         ORDER BY time
 
@@ -172,7 +171,6 @@ def create_time_series_dashboard(
         description (str): Description of the dashboard.
         panel_title (str): Title of the panel.
         raw_sql (str): Raw SQL query to be used in the panel. Make sure the query is adapted to use grafana magic strings for date ranges, as well as has the correct timeseries fields.
-                        For example: SELECT toUnixTimestamp(toStartOfInterval(event_time, INTERVAL 1 minute)) as time_sec, count() as value FROM events WHERE event_time >= $__timeFrom() AND event_time <= $__timeTo() GROUP BY time_sec ORDER BY time_sec
         make_public (bool): Whether to make the dashboard public. Defaults to True.
 
     Returns:
