@@ -98,7 +98,7 @@
               "uid": ""
             },
             "editorType": "sql",
-            "format": 1,
+            "format": 0,
             "meta": {
               "builderOptions": {
                 "columns": [],
