@@ -18,7 +18,7 @@ source venv/bin/activate
 2. Install this package directly from GitHub using pip:
 
 ```bash
-pip install -e git+https://github.com/your-username/grafana-mcp.git#egg=grafana_mcp
+pip install -e git+https://github.com/izaitsevfb/grafana-mcp.git#egg=grafana_mcp
 ```
 
 (Alternatively, you can install it locally with `pip install -e .`)
