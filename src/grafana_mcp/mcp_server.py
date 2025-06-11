@@ -219,9 +219,4 @@ def create_time_series_dashboard(
 
 # Run the server if executed directly
 if __name__ == "__main__":
-    mcp.run(
-        transport="streamable-http",
-        host="127.0.0.1",
-        port=8000,
-        path="/mcp",
-    )
+    mcp.run(transport="sse")
