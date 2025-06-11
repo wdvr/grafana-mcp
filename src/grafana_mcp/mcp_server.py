@@ -11,8 +11,6 @@ import uuid
 from typing import Dict, Any, Optional
 
 from fastmcp import FastMCP
-import requests
-import json
 
 from importlib import resources
 
