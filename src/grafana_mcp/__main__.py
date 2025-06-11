@@ -11,9 +11,4 @@ if __name__ == "__main__":
     """Main entry point for the application."""
     print("Starting Grafana MCP server...")
 
-    mcp.run(
-        transport="streamable-http",
-        host="127.0.0.1",
-        port=8000,
-        path="/mcp",
-    )
+    mcp.run(transport="sse")
