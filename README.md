@@ -46,7 +46,7 @@ You can generate an API token in Grafana by navigating to: Configuration → API
 python -m grafana_mcp
 ```
 
-This runs a small `uvicorn` server that exposes the MCP API at `http://localhost:8000/mcp`.
+This starts the built-in FastMCP server and exposes the MCP API at `http://localhost:8000/mcp`.
 
 5. Add this MCP server to Claude Code. You can either use the convenient
    `add` command or the lower-level JSON configuration:
