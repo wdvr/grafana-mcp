@@ -7,8 +7,10 @@ Executing ``python -m grafana_mcp`` starts the built-in HTTP server.
 
 from grafana_mcp.mcp_server import mcp
 
-
 if __name__ == "__main__":
+    """Main entry point for the application."""
+    print("Starting Grafana MCP server...")
+
     mcp.run(
         transport="streamable-http",
         host="127.0.0.1",

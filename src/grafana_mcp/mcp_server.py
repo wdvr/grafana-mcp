@@ -9,9 +9,9 @@ import requests
 import json
 import uuid
 from typing import Dict, Any, Optional
+
 from fastmcp import FastMCP
-import requests
-import json
+
 from importlib import resources
 
 import dotenv
@@ -203,7 +203,7 @@ def create_time_series_dashboard(
     # If requested, make the dashboard public
     if make_public:
         try:
-            public_dashboard = make_dashboard_public(dashboard_uid)
+            make_dashboard_public(dashboard_uid)
             public_url = get_public_dashboard_url(dashboard_uid)
 
             # Add public URL to the response

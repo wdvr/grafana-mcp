@@ -1,4 +1,4 @@
 fastmcp>2.3
 grafana-client>=4.3.2
 python-dotenv>=1.1.0
-requests>=2.31
+requests>=2.31.0
