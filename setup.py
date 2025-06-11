@@ -10,7 +10,7 @@ setup(
         "grafana_mcp": ["dashboard.json"],
     },
     install_requires=[
-        "mcp>=1.3.0",
+        "fastmcp>2.3",
         "grafana-client>=4.3.2",
         "python-dotenv>=1.1.0",
         "requests>=2.31",

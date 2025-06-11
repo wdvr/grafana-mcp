@@ -18,11 +18,11 @@ class TestMCPServer(unittest.TestCase):
         from grafana_mcp.mcp_server import mcp
         self.assertIsNotNone(mcp)
 
-    def test_app_mount(self):
-        """Ensure the Starlette app mounts the MCP server at /mcp."""
-        from grafana_mcp.__main__ import app
-        paths = [getattr(r, "path", None) for r in app.routes]
-        self.assertIn("/mcp", paths)
+    def test_main_uses_same_mcp(self):
+        """Ensure the __main__ module references the same MCP instance."""
+        from grafana_mcp.__main__ import mcp as main_mcp
+        from grafana_mcp.mcp_server import mcp
+        self.assertIs(main_mcp, mcp)
             
 if __name__ == "__main__":
     unittest.main()
