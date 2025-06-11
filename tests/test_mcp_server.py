@@ -18,7 +18,5 @@ class TestMCPServer(unittest.TestCase):
         """Test that the mcp instance is defined."""
         module = importlib.import_module("grafana_mcp.mcp_server")
         self.assertIsNotNone(module.mcp)
-
-
 if __name__ == "__main__":
     unittest.main()

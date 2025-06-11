@@ -9,7 +9,11 @@ import requests
 import json
 import uuid
 from typing import Dict, Any, Optional
-from mcp.server.fastmcp import FastMCP
+
+from fastmcp import FastMCP
+import requests
+import json
+
 from importlib import resources
 
 import dotenv
@@ -217,4 +221,9 @@ def create_time_series_dashboard(
 
 # Run the server if executed directly
 if __name__ == "__main__":
-    mcp.run()
+    mcp.run(
+        transport="streamable-http",
+        host="127.0.0.1",
+        port=8000,
+        path="/mcp",
+    )
