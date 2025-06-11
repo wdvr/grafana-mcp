@@ -219,4 +219,4 @@ def create_time_series_dashboard(
 
 # Run the server if executed directly
 if __name__ == "__main__":
-    mcp.run(transport="sse")
+    mcp.run(transport="sse", host="0.0.0.0")
