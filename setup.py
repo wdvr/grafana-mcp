@@ -13,6 +13,7 @@ setup(
         "mcp>=1.3.0",
         "grafana-client>=4.3.2",
         "python-dotenv>=1.1.0",
+        "requests>=2.31",
     ],
     python_requires=">=3.7",
 )

@@ -40,22 +40,32 @@ GRAFANA_API_TOKEN=your-api-token-here
 
 You can generate an API token in Grafana by navigating to: Configuration → API Keys → New API key.
 
-4. After installation, the MCP server can be run as:
+4. After installation, start the HTTP server:
 
 ```bash
 python -m grafana_mcp
 ```
 
-5. Add this MCP server to Claude Code:
+This runs a small `uvicorn` server that exposes the MCP API at `http://localhost:8000/mcp`.
+
+5. Add this MCP server to Claude Code. You can either use the convenient
+   `add` command or the lower-level JSON configuration:
 
 ```bash
-claude mcp add-json grafana '{ "type": "stdio", "command": "python", "args": [ "-m", "grafana_mcp" ], "env": {} }'
+# Simple syntax
+claude mcp add grafana http://localhost:8000/mcp
+
+# Equivalent JSON configuration
+claude mcp add-json grafana '{"type": "streamable_http", "url": "http://localhost:8000/mcp"}'
 ```
 
 Note: By default, MCP config applies only to the current directory. If you want to use it globally, add `--scope user` to the command above:
 
 ```bash
-claude mcp add-json --scope user grafana '{ "type": "stdio", "command": "python", "args": [ "-m", "grafana_mcp" ], "env": {} }'
+claude mcp add --scope user grafana http://localhost:8000/mcp
+
+# Or with JSON
+claude mcp add-json --scope user grafana '{"type": "streamable_http", "url": "http://localhost:8000/mcp"}'
 ```
 
 6. Run Claude Code as usual:
